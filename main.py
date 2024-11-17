@@ -22,7 +22,7 @@ CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second c
 API_HASH = os.getenv("API_HASH")
 API_ID = int(os.getenv("API_ID", "207612"))
 TERABOX_API = os.getenv("TERABOX_API", "https://terabopyboy.workers.dev/")
-DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-1001596797916"))
+DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-1002436700388"))
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
 
 # Flask app for monitoring
@@ -56,8 +56,8 @@ async def is_user_in_channel(client, user_id, channel_username):
 
 async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
-    join_button_1 = InlineKeyboardButton("Join Channel 1", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("Join Channel 2", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    join_button_1 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
+    join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
     await client.send_message(
         chat_id,
@@ -136,9 +136,9 @@ async def process_video_request(client, message):
         web_app = WebAppInfo(url=player_url)
 
         markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("➡️ PLAY VIDEO ▶️", web_app=web_app)],
-            [InlineKeyboardButton('👥 SUPPORT 👥', url='https://t.me/EVIL_BOTS_SUPPORT')],
-            [InlineKeyboardButton('♡ BLUM ♡', url='https://t.me/blum/app?startapp=ref_hNuLkg4XLd')]
+            [InlineKeyboardButton("♡ PLAY VIDEO ♡", web_app=web_app)],
+            [InlineKeyboardButton('👥 SUPPORT 👥', url='https://t.me/Ur_rishu_143')],
+            [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
         ])
 
         bot_message_text = f"**User:💀 {message.from_user.mention}\nHere's your video:**"
