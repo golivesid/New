@@ -137,11 +137,11 @@ async def process_video_request(client, message):
 
         markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("♡ PLAY VIDEO ♡", web_app=web_app)],
-            [InlineKeyboardButton('👥 SUPPORT 👥', url='https://t.me/Ur_rishu_143')],
+            [InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')],
             [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
         ])
 
-        bot_message_text = f"**User:💀 {message.from_user.mention}\nHere's your video:**"
+        bot_message_text = f"**User:🤩 {message.from_user.mention}\nHere's your video:**"
 
         # Send video details to the user
         await client.send_photo(
