@@ -1,0 +1,9 @@
+Flask
+pymongo
+pyrogram
+requests
+pycryptodome
+TgCrypto
+ffprobe
+httpx
+beautifulsoup4
