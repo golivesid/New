@@ -17,8 +17,8 @@ load_dotenv()
 
 # Bot details from environment variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "spy_tube")  # First channel username
-CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "another_channel")  # Second channel username
+CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First channel username
+CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
 API_HASH = os.getenv("API_HASH")
 API_ID = int(os.getenv("API_ID", "207612"))
 TERABOX_API = os.getenv("TERABOX_API", "https://terabopyboy.workers.dev/")
