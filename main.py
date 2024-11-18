@@ -10,19 +10,16 @@ from flask import Flask
 from threading import Thread
 import pymongo
 from typing import Optional
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
 
 # Bot details from environment variables
-BOT_TOKEN = os.getenv("BOT_TOKEN","6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI")
+BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
 CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First channel username
 CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
 API_HASH = os.getenv("API_HASH")
 API_ID = int(os.getenv("API_ID", "207612"))
-TERABOX_API = os.getenv("TERABOX_API", "https://terabopyboy.workers.dev/")
-DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-1002436700388"))
+TERABOX_API = "https://terabopyboy.workers.dev/"
+DUMP_CHANNEL = "-1002436700388"
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
 
 # Flask app for monitoring
