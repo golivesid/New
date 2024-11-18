@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Bot details from environment variables
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN","6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI")
 CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First channel username
 CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
 API_HASH = os.getenv("API_HASH")
@@ -30,7 +30,7 @@ flask_app = Flask(__name__)
 start_time = time.time()
 
 # MongoDB setup
-mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI"))
+mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI","mongodb+srv://Teraboxdownloader:Rajubhai@cluster0.tbocw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"))
 db = mongo_client[os.getenv("MONGO_DB_NAME", "Rishu-free-db")]
 users_collection = db[os.getenv("MONGO_COLLECTION_NAME", "users")]
 
