@@ -18,7 +18,7 @@ CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First chann
 CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
 API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
 API_ID = "14050586"
-TERABOX_API = "https://terabopyboy.workers.dev/"
+TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"
 DUMP_CHANNEL = "-1002436700388"
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
 
