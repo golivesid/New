@@ -16,8 +16,8 @@ from typing import Optional
 BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
 CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First channel username
 CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
-API_HASH = os.getenv("API_HASH")
-API_ID = int(os.getenv("API_ID", "207612"))
+API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
+API_ID = "14050586"
 TERABOX_API = "https://terabopyboy.workers.dev/"
 DUMP_CHANNEL = "-1002436700388"
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
