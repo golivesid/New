@@ -14,8 +14,8 @@ from typing import Optional
 
 # Bot details from environment variables
 BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
-CHANNEL_1_USERNAME = os.getenv("CHANNEL_1_USERNAME", "Rishuteam")  # First channel username
-CHANNEL_2_USERNAME = os.getenv("CHANNEL_2_USERNAME", "RishuNetwork")  # Second channel username
+CHANNEL_1_USERNAME = "Rishuteam" # First channel username
+CHANNEL_2_USERNAME = "RishuNetwork" # Second channel username
 API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
 API_ID = "14050586"
 TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"
