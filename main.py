@@ -60,8 +60,8 @@ async def is_user_in_channel(client, user_id, channel_username):
 
 async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
-    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/Rishuteam")
+    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/RishuNetwork")
     try_again_button = InlineKeyboardButton("♡ I Joined ♡", callback_data="check_membership")
     markup = InlineKeyboardMarkup([
         [join_button_1],
