@@ -65,7 +65,7 @@ async def send_join_prompt(client, chat_id):
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
     await client.send_message(
         chat_id,
-        "♡ You need to join both channels to use this bot. Click the buttons below to join and try again. ♡",
+        "♡ You need to join both channels to use this bot.. ♡",
         reply_markup=markup,
     )
 
@@ -110,7 +110,7 @@ async def start_message(client, message):
     await client.send_photo(
         chat_id=message.chat.id,
         photo=random_image,
-        caption="♡ Welcome!  {message.from_user.mention} \n\n♡Send me a TeraBox URL to Get Started. ♡",
+        caption="**♡ Welcome: {message.from_user.mention} **\n\n♡Send me a TeraBox URL to Get Started. ♡",
         reply_markup=markup
     )
 
