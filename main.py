@@ -110,7 +110,7 @@ async def start_message(client, message):
     await client.send_photo(
         chat_id=message.chat.id,
         photo=random_image,
-        caption="**♡ Welcome: {message.from_user.mention} **\n\n♡Send me a TeraBox URL to Get Started. ♡",
+        caption=f"**♡ Welcome: {message.from_user.mention} **\n\n♡Send me a TeraBox URL to Get Started. ♡",
         reply_markup=markup
     )
 
