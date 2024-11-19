@@ -115,6 +115,81 @@ async def start_message(client, message):
         reply_markup=markup
     )
 
+# Add this function to the provided script
+@app.on_message(filters.command("broadcast") & filters.user(5738579437))
+async def broadcast_message(client, message):
+    """Broadcast a message (text, photo, video, etc.) to all users."""
+    if not (message.reply_to_message or len(message.command) > 1):
+        await message.reply_text(
+            "Please reply to a message or provide text to broadcast.\n\nUsage:\n"
+            "/broadcast Your message here\nOR\nReply to any media with /broadcast"
+        )
+        return
+
+    broadcast_content = message.reply_to_message if message.reply_to_message else message
+    users = users_collection.find()
+    sent_count = 0
+    failed_count = 0
+
+    await message.reply_text("Starting the broadcast...")
+
+    for user in users:
+        try:
+            user_id = user["user_id"]
+
+            if broadcast_content.photo:
+                await client.send_photo(
+                    chat_id=user_id,
+                    photo=broadcast_content.photo.file_id,
+                    caption=broadcast_content.caption or ""
+                )
+            elif broadcast_content.video:
+                await client.send_video(
+                    chat_id=user_id,
+                    video=broadcast_content.video.file_id,
+                    caption=broadcast_content.caption or ""
+                )
+            elif broadcast_content.document:
+                await client.send_document(
+                    chat_id=user_id,
+                    document=broadcast_content.document.file_id,
+                    caption=broadcast_content.caption or ""
+                )
+            elif broadcast_content.audio:
+                await client.send_audio(
+                    chat_id=user_id,
+                    audio=broadcast_content.audio.file_id,
+                    caption=broadcast_content.caption or ""
+                )
+            elif broadcast_content.voice:
+                await client.send_voice(
+                    chat_id=user_id,
+                    voice=broadcast_content.voice.file_id,
+                    caption=broadcast_content.caption or ""
+                )
+            else:
+                await client.send_message(
+                    chat_id=user_id,
+                    text=broadcast_content.text or "",
+                    parse_mode="html"
+                )
+            sent_count += 1
+        except FloodWait as e:
+            await sleep(e.value)
+        except Exception as e:
+            print(f"Failed to send message to {user_id}: {e}")
+            failed_count += 1
+
+    # Notify admin
+    await client.send_message(
+        chat_id=ADMIN_ID,
+        text=(
+            f"📢 **Broadcast Completed**:\n\n"
+            f"✅ Sent: {sent_count} users\n"
+            f"❌ Failed: {failed_count} users\n"
+            f"👥 Total: {users_collection.count_documents({})} users"
+        )
+    )
 
 @app.on_message(filters.command("Rishu"))
 async def status_message(client, message):
