@@ -70,6 +70,78 @@ async def send_join_prompt(client, chat_id):
         reply_markup=markup,
     )
 
+def setup_faq_handlers(bot, problems_collection):
+    # Set owner ID directly
+    owner_id = 5738579437  # Replace with the actual owner ID if needed
+
+    # Handle FAQ button callback
+    @bot.callback_query_handler(func=lambda call: call.data == "faq")
+    def handle_faq_button(call):
+        chat_id = call.message.chat.id
+        bot.send_message(chat_id, "Please describe your problem:")
+        bot.register_next_step_handler_by_chat_id(chat_id, save_problem)
+
+    # Save the user problem
+    def save_problem(message):
+        chat_id = message.chat.id
+        problem_text = message.text
+
+        # Save the problem in MongoDB
+        problems_collection.insert_one({"chat_id": chat_id, "problem": problem_text})
+
+        # Notify the owner/admin
+        bot.send_message(
+            owner_id,
+            f"🤔 New issue from User {chat_id}:\n\n{problem_text}"
+        )
+        # Notify the user
+        bot.send_message(chat_id, "Thank you! Your problem has been forwarded to the admin.")
+
+    # Admin replies to user problem
+    @bot.message_handler(commands=['reply'])
+    def handle_reply(message):
+        if message.chat.id != owner_id:
+            bot.send_message(message.chat.id, "❌ You are not authorized to use this command.")
+            return
+
+        try:
+            # Command format: /reply <user_id> <reply_message>
+            parts = message.text.split(' ', 2)
+            user_id = int(parts[1])
+            reply_text = parts[2]
+
+            # Ensure the user exists in the problem collection
+            problem = problems_collection.find_one({"chat_id": user_id})
+            if problem:
+                # Send the reply to the user
+                bot.send_message(user_id, f"Reply from Admin: {reply_text}")
+                # Notify the admin
+                bot.send_message(owner_id, f"Your reply has been sent to user {user_id}.")
+                # Optionally, delete the problem after reply
+                problems_collection.delete_one({"chat_id": user_id})
+            else:
+                bot.send_message(owner_id, f"User {user_id} has not submitted any problems.")
+        except (IndexError, ValueError):
+            bot.send_message(owner_id, "❌ Invalid command format. Use: /reply <user_id> <reply_message>.")
+
+    # List all problems submitted by users
+    @bot.message_handler(commands=['problems'])
+    def list_problems(message):
+        if message.chat.id != owner_id:
+            bot.send_message(message.chat.id, "❌ You are not authorized to use this command.")
+            return
+
+        problems = problems_collection.find()
+        if problems.count() == 0:
+            bot.send_message(owner_id, "No problems have been submitted yet.")
+        else:
+            response = "📋 **List of Submitted Problems:**\n\n"
+            for problem in problems:
+                chat_id = problem['chat_id']
+                problem_text = problem['problem']
+                response += f"👤 **User ID:** {chat_id}\n📝 **Problem:** {problem_text}\n\n"
+
+            bot.send_message(owner_id, response, parse_mode='Markdown')
 
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
