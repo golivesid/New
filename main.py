@@ -13,8 +13,8 @@ from typing import Optional
 # Bot details
 BOT_TOKEN = '6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI'
 CHANNEL_USERNAME = 'RishuTeam'  # Ensure no '@' symbol here
-API_HASH = ''
-API_ID = 207612
+API_HASH = '42a60d9c657b106370c79bb0a8ac560c'
+API_ID = '14050586'
 TERABOX_API = 'https://terabox-api.mrspyboy.workers.dev'
 DUMP_CHANNEL = -1002436700388
 
