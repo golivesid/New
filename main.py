@@ -13,7 +13,7 @@ from typing import Optional
 import random
 
 # Bot details from environment variables
-BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
+BOT_TOKEN = "6956731651:AAHdXJxSS6qliZAkCCCPAzPwU4i-oha0PY0"
 CHANNEL_1_USERNAME = "Rishuteam"  # First channel username
 CHANNEL_2_USERNAME = "RishuNetwork"  # Second channel username
 API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
@@ -30,7 +30,7 @@ start_time = time.time()
 mongo_client = pymongo.MongoClient(
     os.getenv(
         "MONGO_URI",
-        "mongodb+srv://Teraboxdownloader:Rajubhai@cluster0.tbocw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        "mongodb+srv://Krishna:pss968048@cluster0.4rfuzro.mongodb.net/?retryWrites=true&w=majority"
     )
 )
 db = mongo_client[os.getenv("MONGO_DB_NAME", "Rishu-free-db")]
