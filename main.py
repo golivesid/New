@@ -10,6 +10,7 @@ from flask import Flask
 from threading import Thread
 import pymongo
 from typing import Optional
+import random
 
 # Bot details from environment variables
 BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
@@ -72,11 +73,12 @@ async def send_join_prompt(client, chat_id):
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
     user_id = message.from_user.id
+    # Check if the user is new
     if users_collection.count_documents({'user_id': user_id}) == 0:
-        # Insert new user into database
+        # Insert new user into the database
         users_collection.insert_one({'user_id': user_id})
 
-        # Notify admin about the new user
+        # Notify the admin about the new user
         await client.send_message(
             chat_id=ADMIN_ID,
             text=(
@@ -87,7 +89,30 @@ async def start_message(client, message):
             )
         )
 
-    await message.reply_text("♡ Hello! Send me a TeraBox URL to Get Started. ♡")
+    # Random image selection
+    image_urls = [
+        "https://envs.sh/53z.jpg",
+        "https://envs.sh/53K.jpg",
+        "https://envs.sh/5zY.jpg",
+        "https://envs.sh/5z3.jpg",
+        "https://envs.sh/5zz.jpg"
+    ]
+    random_image = random.choice(image_urls)
+
+    # Inline buttons for channel join
+    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
+    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    support_button = InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')
+
+    markup = InlineKeyboardMarkup([[join_button_1], [join_button_2], [support_button]])
+
+    # Send the welcome message with the random image
+    await client.send_photo(
+        chat_id=message.chat.id,
+        photo=random_image,
+        caption="♡ Welcome! Please join both channels to start using the bot. ♡",
+        reply_markup=markup
+    )
 
 
 @app.on_message(filters.command("status"))
