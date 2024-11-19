@@ -49,12 +49,11 @@ def home():
 async def is_user_in_channel(client, user_id, channel_username):
     """Check if the user is a member of the specified channel."""
     try:
-        member = await client.get_chat_member(channel_username, user_id)
-        return member.status in ["member", "administrator", "creator"]
+        await client.get_chat_member(channel_username, user_id)
+        return True
     except UserNotParticipant:
         return False
-    except Exception as e:
-        print(f"Error checking user in channel {channel_username}: {e}")
+    except Exception:
         return False
 
 
@@ -62,32 +61,13 @@ async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
     join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
     join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
-    try_again_button = InlineKeyboardButton("♡ I Joined ♡", callback_data="check_membership")
-    markup = InlineKeyboardMarkup([
-        [join_button_1],
-        [join_button_2],
-        [try_again_button]
-    ])
+    markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
     await client.send_message(
         chat_id,
-        "♡ You need to join both channels to use this bot. Click the buttons below to join and press 'I Joined' after joining. ♡",
+        "♡ You need to join both channels to use this bot. Click the buttons below to join and try again. ♡",
         reply_markup=markup,
     )
 
-@app.on_callback_query(filters.regex("check_membership"))
-async def check_membership(client, callback_query):
-    user_id = callback_query.from_user.id
-    chat_id = callback_query.message.chat.id
-
-    if await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME) and await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME):
-        await callback_query.answer("Thank you for joining! You can now use the bot.", show_alert=True)
-        await client.edit_message_text(
-            chat_id=chat_id,
-            message_id=callback_query.message.id,
-            text="♡ Thank you for joining! You can now use the bot. ♡"
-        )
-    else:
-        await callback_query.answer("You're still not a member of both channels. Please join and try again.", show_alert=True)
 
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
@@ -195,4 +175,4 @@ flask_thread = Thread(target=run_flask)
 flask_thread.start()
 
 # Run Pyrogram bot
-app.run() 
+app.run()
