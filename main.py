@@ -46,27 +46,27 @@ def home():
     return f"Bot uptime: {uptime_minutes:.2f} minutes\nUnique users: {user_count}"
 
 
-async def is_user_in_channel(client, user_id, channel_username):
-    """Check if the user is a member of the specified channel."""
+async def is_user_in_channels(client, user_id):
+    """Check if the user is a member of both channels."""
     try:
-        member = await client.get_chat_member(channel_username, user_id)
-        return member.status in ["member", "administrator", "creator"]
+        for channel_username in [Rishuteam, RishuNetwork]:
+            member = await client.get_chat_member(channel_username, user_id)
+            if member.status not in ["member", "administrator", "creator"]:
+                return False
+        return True
     except UserNotParticipant:
         return False
     except Exception as e:
-        print(f"Error checking user in channel {channel_username}: {e}")
+        print(f"Error checking user in channels: {e}")
         return False
 
 
 async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
-    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
-    try_again_button = InlineKeyboardButton("♡ I Joined ♡", callback_data="check_membership")
     markup = InlineKeyboardMarkup([
-        [join_button_1],
-        [join_button_2],
-        [try_again_button]
+        [InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")],
+        [InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")],
+        [InlineKeyboardButton("♡ I Joined ♡", callback_data="check_membership")]
     ])
     await client.send_message(
         chat_id,
@@ -74,12 +74,13 @@ async def send_join_prompt(client, chat_id):
         reply_markup=markup,
     )
 
+
 @app.on_callback_query(filters.regex("check_membership"))
 async def check_membership(client, callback_query):
     user_id = callback_query.from_user.id
     chat_id = callback_query.message.chat.id
 
-    if await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME) and await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME):
+    if await is_user_in_channels(client, user_id):
         await callback_query.answer("Thank you for joining! You can now use the bot.", show_alert=True)
         await client.edit_message_text(
             chat_id=chat_id,
@@ -88,6 +89,7 @@ async def check_membership(client, callback_query):
         )
     else:
         await callback_query.answer("You're still not a member of both channels. Please join and try again.", show_alert=True)
+
 
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
@@ -107,7 +109,10 @@ async def start_message(client, message):
             )
         )
 
-    await message.reply_text("♡ Hello! Send me a TeraBox URL to Get Started. ♡")
+    if await is_user_in_channels(client, user_id):
+        await message.reply_text("♡ Hello! Send me a TeraBox URL to Get Started. ♡")
+    else:
+        await send_join_prompt(client, message.chat.id)
 
 
 @app.on_message(filters.command("status"))
@@ -122,68 +127,12 @@ async def get_video_links(client, message):
     user_id = message.from_user.id
 
     # Check if the user is a member of both channels
-    if not await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME):
-        await send_join_prompt(client, message.chat.id)
-        return
-    if not await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME):
+    if not await is_user_in_channels(client, user_id):
         await send_join_prompt(client, message.chat.id)
         return
 
     # Process the video request
     await process_video_request(client, message)
-
-
-def fetch_video_details(video_url: str) -> Optional[str]:
-    """Fetch video thumbnail from a direct TeraBox URL."""
-    try:
-        response = requests.get(video_url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return soup.find("meta", property="og:image")["content"] if soup.find("meta", property="og:image") else None
-    except requests.exceptions.RequestException:
-        return None
-
-
-async def process_video_request(client, message):
-    video_url = message.text.strip()
-    await message.reply_chat_action(ChatAction.TYPING)
-
-    try:
-        # Retrieve video details
-        thumbnail = fetch_video_details(video_url)
-        if not thumbnail:
-            thumbnail = "https://envs.sh/L75.jpg"  # Default image if thumbnail is missing
-
-        # Player URL using WebAppInfo
-        player_url = f"{TERABOX_API}{video_url}"
-        web_app = WebAppInfo(url=player_url)
-
-        markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("♡ PLAY VIDEO ♡", web_app=web_app)],
-            [InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')],
-            [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
-        ])
-
-        bot_message_text = f"**User:🤩 {message.from_user.mention}\nHere's your video:**"
-
-        # Send video details to the user
-        await client.send_photo(
-            chat_id=message.chat.id,
-            photo=thumbnail,
-            caption=bot_message_text,
-            reply_markup=markup,
-        )
-
-        # Forward the link and thumbnail to the dump channel
-        dump_message_text = f"From {message.from_user.mention}:\n Link: [Watch Video]({player_url})"
-        await client.send_photo(
-            chat_id=DUMP_CHANNEL,
-            photo=thumbnail,
-            caption=dump_message_text
-        )
-
-    except requests.exceptions.RequestException as e:
-        await message.reply_text(f"Error connecting to the API: {str(e)}")
 
 
 # Flask thread for monitoring
