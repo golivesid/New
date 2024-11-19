@@ -175,7 +175,7 @@ async def start_message(client, message):
     # Inline buttons for channel join
     join_button_1 = InlineKeyboardButton("♡ Support ♡", url=f"https://t.me/Ur_rishu_143")
     join_button_2 = InlineKeyboardButton("♡ All Bots ♡", url=f"https://t.me/vip_robotz")
-    support_button = InlineKeyboardButton('♡ Support ♡', url='https://t.me/Ur_support07')
+    support_button = InlineKeyboardButton('♡ FAQ ♡', callback_data='faq')
 
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2], [support_button]])
 
