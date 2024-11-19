@@ -122,10 +122,10 @@ async def get_video_links(client, message):
     user_id = message.from_user.id
 
     # Check if the user is a member of both channels
-    if not await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME):
+    if not await is_user_in_channel(client, user_id, Rishuteam):
         await send_join_prompt(client, message.chat.id)
         return
-    if not await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME):
+    if not await is_user_in_channel(client, user_id, RishuNetwork):
         await send_join_prompt(client, message.chat.id)
         return
 
