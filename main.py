@@ -82,7 +82,7 @@ async def start_message(client, message):
         await client.send_message(
             chat_id=ADMIN_ID,
             text=(
-                f"💡 **New User Alert**:\n"
+                f"💡 **New User Alert**:\n\n"
                 f"👤 **User:** {message.from_user.mention}\n"
                 f"🆔 **User ID:** `{user_id}`\n"
                 f"📊 **Total Users:** {users_collection.count_documents({})}"
@@ -100,9 +100,9 @@ async def start_message(client, message):
     random_image = random.choice(image_urls)
 
     # Inline buttons for channel join
-    join_button_1 = InlineKeyboardButton("♡ Join♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
-    support_button = InlineKeyboardButton('♡ Support ♡', url='https://t.me/Ur_rishu_143')
+    join_button_1 = InlineKeyboardButton("♡ Support ♡", url=f"https://t.me/Ur_rishu_143")
+    join_button_2 = InlineKeyboardButton("♡ All Bots ♡", url=f"https://t.me/vip_robotz")
+    support_button = InlineKeyboardButton('♡ Support ♡', url='https://t.me/Ur_support07')
 
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2], [support_button]])
 
