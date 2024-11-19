@@ -72,23 +72,6 @@ async def send_join_prompt(client, chat_id):
     )
 
 
-# Define a regex for validating TeraBox links
-TERABOX_URL_REGEX = r"^https://www\.terabox\.com/s/[a-zA-Z0-9]+.*$"
-
-@app.on_message(filters.text & ~filters.command(["start", "status"]))
-async def handle_user_message(client, message):
-    text = message.text.strip()
-
-    # Validate the input text as a TeraBox URL
-    if re.match(TERABOX_URL_REGEX, text):
-        await message.reply_text("✅ **Valid Link**: Your TeraBox link is valid. Processing now...")
-        # Process the valid link
-        await process_video_request(client, message)
-    else:
-        await message.reply_text(
-            "❌ **Invalid Link**: Please send a valid TeraBox link starting with `https://www.terabox.com/s/`."
-        )
-
 def setup_faq_handlers(bot, problems_collection):
     # Set owner ID directly
     owner_id = 5738579437  # Replace with the actual owner ID if needed
