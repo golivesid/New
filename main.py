@@ -11,11 +11,10 @@ from threading import Thread
 import pymongo
 from typing import Optional
 
-
 # Bot details from environment variables
 BOT_TOKEN = "6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI"
-CHANNEL_1_USERNAME = "Rishuteam" # First channel username
-CHANNEL_2_USERNAME = "RishuNetwork" # Second channel username
+CHANNEL_1_USERNAME = "Rishuteam"  # First channel username
+CHANNEL_2_USERNAME = "RishuNetwork"  # Second channel username
 API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
 API_ID = "14050586"
 TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"
@@ -27,7 +26,12 @@ flask_app = Flask(__name__)
 start_time = time.time()
 
 # MongoDB setup
-mongo_client = pymongo.MongoClient(os.getenv("MONGO_URI","mongodb+srv://Teraboxdownloader:Rajubhai@cluster0.tbocw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"))
+mongo_client = pymongo.MongoClient(
+    os.getenv(
+        "MONGO_URI",
+        "mongodb+srv://Teraboxdownloader:Rajubhai@cluster0.tbocw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    )
+)
 db = mongo_client[os.getenv("MONGO_DB_NAME", "Rishu-free-db")]
 users_collection = db[os.getenv("MONGO_COLLECTION_NAME", "users")]
 
@@ -49,16 +53,18 @@ async def is_user_in_channel(client, user_id, channel_username):
         return True
     except UserNotParticipant:
         return False
+    except Exception:
+        return False
 
 
 async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
-    join_button_1 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
+    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
     await client.send_message(
         chat_id,
-        "♡ You need to join both channels to use this bot. ♡",
+        "♡ You need to join both channels to use this bot. Click the buttons below to join and try again. ♡",
         reply_markup=markup,
     )
 
@@ -69,7 +75,7 @@ async def start_message(client, message):
     if users_collection.count_documents({'user_id': user_id}) == 0:
         # Insert new user into database
         users_collection.insert_one({'user_id': user_id})
-        
+
         # Notify admin about the new user
         await client.send_message(
             chat_id=ADMIN_ID,
@@ -80,7 +86,7 @@ async def start_message(client, message):
                 f"📊 **Total Users:** {users_collection.count_documents({})}"
             )
         )
-    
+
     await message.reply_text("♡ Hello! Send me a TeraBox URL to Get Started. ♡")
 
 
@@ -94,7 +100,7 @@ async def status_message(client, message):
 @app.on_message(filters.text & ~filters.command(["start", "status"]))
 async def get_video_links(client, message):
     user_id = message.from_user.id
-    
+
     # Check if the user is a member of both channels
     if not await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME):
         await send_join_prompt(client, message.chat.id)
@@ -102,7 +108,7 @@ async def get_video_links(client, message):
     if not await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME):
         await send_join_prompt(client, message.chat.id)
         return
-    
+
     # Process the video request
     await process_video_request(client, message)
 
