@@ -23,7 +23,7 @@ flask_app = Flask(__name__)
 start_time = time.time()
 
 # MongoDB setup
-mongo_client = pymongo.MongoClient('mongo:lOMs3uDmCxgNFYNP@cluster0.376zvxq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongo_client = pymongo.MongoClient('mongodb+srv://Teraboxdownloader:Rajubhai@cluster0.tbocw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = mongo_client['Rishu-free-db']
 users_collection = db['users']
 
