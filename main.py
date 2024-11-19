@@ -110,16 +110,16 @@ async def start_message(client, message):
     await client.send_photo(
         chat_id=message.chat.id,
         photo=random_image,
-        caption=f"**♡ Welcome: {message.from_user.mention} **\n\n♡Send me a TeraBox URL to Get Started. ♡",
+        caption=f"**♡ Welcome: {message.from_user.mention} **\n\n**♡Send me a TeraBox URL to Get Started. ♡**",
         reply_markup=markup
     )
 
 
-@app.on_message(filters.command("status"))
+@app.on_message(filters.command("Rishu"))
 async def status_message(client, message):
     user_count = users_collection.count_documents({})
     uptime_minutes = (time.time() - start_time) / 60
-    await message.reply_text(f"💫 Bot uptime: {uptime_minutes:.2f} minutes\n👥 Total unique users: {user_count}")
+    await message.reply_text(f"💫 Bot uptime: {uptime_minutes:.2f} minutes\n\n👥 Total unique users: {user_count}")
 
 
 @app.on_message(filters.text & ~filters.command(["start", "status"]))
@@ -169,7 +169,7 @@ async def process_video_request(client, message):
             [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
         ])
 
-        bot_message_text = f"**Dear:🤩 {message.from_user.mention}\nHere's your video:**"
+        bot_message_text = f"**Dear: 🤩  {message.from_user.mention}\n\nHere's your video:**"
 
         # Send video details to the user
         await client.send_photo(
