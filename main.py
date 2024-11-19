@@ -71,14 +71,18 @@ async def send_join_prompt(client, chat_id):
         reply_markup=markup,
     )
 
-@app.on_message(filters.text & ~filters.command(["start", "Rishu","broadcast"]))
-async def handle_user_message(client, message):
+
+# Define a regex for validating TeraBox links
+TERABOX_URL_REGEX = r"^https://www\.terabox\.com/s/[a-zA-Z0-9]+.*$"
+
+@app.on_message(filters.text)
+async def validate_terabox_link(client, message):
     text = message.text.strip()
 
     # Validate the input text as a TeraBox URL
     if re.match(TERABOX_URL_REGEX, text):
         await message.reply_text("✅ **Valid Link**: Your TeraBox link is valid. Processing now...")
-        # Process the valid link
+        # Call the function to process the valid link
         await process_video_request(client, message)
     else:
         await message.reply_text(
