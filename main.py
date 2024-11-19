@@ -11,12 +11,12 @@ import pymongo
 from typing import Optional
 
 # Bot details
-BOT_TOKEN = ''
+BOT_TOKEN = '6910046562:AAE4z0SZBa0bEeyzcGbxX8chwC-7jFCeUcI'
 CHANNEL_USERNAME = 'RishuTeam'  # Ensure no '@' symbol here
 API_HASH = ''
 API_ID = 207612
 TERABOX_API = 'https://terabox-api.mrspyboy.workers.dev'
-DUMP_CHANNEL = -1001596797916
+DUMP_CHANNEL = -1002436700388
 
 # Flask app for monitoring
 flask_app = Flask(__name__)
