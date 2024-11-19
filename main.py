@@ -169,7 +169,7 @@ async def process_video_request(client, message):
             [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
         ])
 
-        bot_message_text = f"**User:🤩 {message.from_user.mention}\nHere's your video:**"
+        bot_message_text = f"**Dear:🤩 {message.from_user.mention}\nHere's your video:**"
 
         # Send video details to the user
         await client.send_photo(
