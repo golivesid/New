@@ -60,8 +60,8 @@ async def is_user_in_channel(client, user_id, channel_username):
 
 async def send_join_prompt(client, chat_id):
     """Send a message asking the user to join both channels."""
-    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    join_button_1 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
+    join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
     await client.send_message(
         chat_id,
@@ -100,9 +100,9 @@ async def start_message(client, message):
     random_image = random.choice(image_urls)
 
     # Inline buttons for channel join
-    join_button_1 = InlineKeyboardButton("♡ Join Rishuteam ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
-    join_button_2 = InlineKeyboardButton("♡ Join RishuNetwork ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
-    support_button = InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')
+    join_button_1 = InlineKeyboardButton("♡ Join♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
+    join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
+    support_button = InlineKeyboardButton('♡ Support ♡', url='https://t.me/Ur_rishu_143')
 
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2], [support_button]])
 
@@ -110,7 +110,7 @@ async def start_message(client, message):
     await client.send_photo(
         chat_id=message.chat.id,
         photo=random_image,
-        caption=f"**♡ Welcome: {message.from_user.mention} **\n\n**♡Send me a TeraBox URL to Get Started. ♡**",
+        caption=f"**♡ Welcome: {message.from_user.mention} **\n\n**♡Send me a TeraBox URL to Get Started. ♡**\n\n╔═════════════════╗\n║ ➻**ʟᴏᴠᴇ ᴡɪᴛʜ** ➪ [꯭꯭↬꯭ᬃ꯭ ⃪꯭ ꯭⁢⁣⁤⁣⁣⁢⁣⁤⁢⁤⁣⁢⁤⁣⁤᪳᪳🇷꯭𝚰𝛅꯭꯭ʜ꯭֟፝፝֟ᴜ ꯭꯭༗꯭»꯭݅݅݅݅𓆪](https://t.me/ur_rishu_143)\n╚═════════════════╝",
         reply_markup=markup
     )
 
