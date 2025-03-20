@@ -2,13 +2,12 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from pyrogram.enums import ChatAction
-from pyrogram.errors import UserNotParticipant
+from pyrogram.errors import UserNotParticipant, FloodWait
 import requests
 import time
 from bs4 import BeautifulSoup
 from flask import Flask
 from threading import Thread
-from pyrogram.errors import FloodWait
 import pymongo
 import re
 from typing import Optional
@@ -20,7 +19,7 @@ CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
 CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
 API_HASH = "561ae93345a2a4e435cff3c75a088b72"
 API_ID = "20026290"
-TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"
+TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"  # Ensure this URL is correct
 DUMP_CHANNEL = "-1002688354661"
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
 
@@ -72,79 +71,6 @@ async def send_join_prompt(client, chat_id):
     )
 
 
-def setup_faq_handlers(bot, problems_collection):
-    # Set owner ID directly
-    owner_id = 5738579437  # Replace with the actual owner ID if needed
-
-    # Handle FAQ button callback
-    @bot.callback_query_handler(func=lambda call: call.data == "faq")
-    def handle_faq_button(call):
-        chat_id = call.message.chat.id
-        bot.send_message(chat_id, "Please describe your problem:")
-        bot.register_next_step_handler_by_chat_id(chat_id, save_problem)
-
-    # Save the user problem
-    def save_problem(message):
-        chat_id = message.chat.id
-        problem_text = message.text
-
-        # Save the problem in MongoDB
-        problems_collection.insert_one({"chat_id": chat_id, "problem": problem_text})
-
-        # Notify the owner/admin
-        bot.send_message(
-            owner_id,
-            f"🤔 New issue from User {chat_id}:\n\n{problem_text}"
-        )
-        # Notify the user
-        bot.send_message(chat_id, "Thank you! Your problem has been forwarded to the admin.")
-
-    # Admin replies to user problem
-    @bot.message_handler(commands=['reply'])
-    def handle_reply(message):
-        if message.chat.id != owner_id:
-            bot.send_message(message.chat.id, "❌ You are not authorized to use this command.")
-            return
-
-        try:
-            # Command format: /reply <user_id> <reply_message>
-            parts = message.text.split(' ', 2)
-            user_id = int(parts[1])
-            reply_text = parts[2]
-
-            # Ensure the user exists in the problem collection
-            problem = problems_collection.find_one({"chat_id": user_id})
-            if problem:
-                # Send the reply to the user
-                bot.send_message(user_id, f"Reply from Admin: {reply_text}")
-                # Notify the admin
-                bot.send_message(owner_id, f"Your reply has been sent to user {user_id}.")
-                # Optionally, delete the problem after reply
-                problems_collection.delete_one({"chat_id": user_id})
-            else:
-                bot.send_message(owner_id, f"User {user_id} has not submitted any problems.")
-        except (IndexError, ValueError):
-            bot.send_message(owner_id, "❌ Invalid command format. Use: /reply <user_id> <reply_message>.")
-
-    # List all problems submitted by users
-    @bot.message_handler(commands=['problems'])
-    def list_problems(message):
-        if message.chat.id != owner_id:
-            bot.send_message(message.chat.id, "❌ You are not authorized to use this command.")
-            return
-
-        problems = problems_collection.find()
-        if problems.count() == 0:
-            bot.send_message(owner_id, "No problems have been submitted yet.")
-        else:
-            response = "📋 **List of Submitted Problems:**\n\n"
-            for problem in problems:
-                chat_id = problem['chat_id']
-                problem_text = problem['problem']
-                response += f"👤 **User ID:** {chat_id}\n📝 **Problem:** {problem_text}\n\n"
-
-            bot.send_message(owner_id, response, parse_mode='Markdown')
-
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
     user_id = message.from_user.id
@@ -189,88 +115,6 @@ async def start_message(client, message):
         reply_markup=markup
     )
 
-# Add this function to the provided script
-@app.on_message(filters.command("broadcast") & filters.user(5738579437))
-async def broadcast_message(client, message):
-    """Broadcast a message (text, photo, video, etc.) to all users."""
-    if not (message.reply_to_message or len(message.command) > 1):
-        await message.reply_text(
-            "Please reply to a message or provide text to broadcast.\n\nUsage:\n"
-            "/broadcast Your message here\nOR\nReply to any media with /broadcast"
-        )
-        return
-
-    broadcast_content = message.reply_to_message if message.reply_to_message else message
-    users = users_collection.find()
-    sent_count = 0
-    failed_count = 0
-
-    await message.reply_text("Starting the broadcast...")
-
-    for user in users:
-        try:
-            user_id = user["user_id"]
-
-            if broadcast_content.photo:
-                await client.send_photo(
-                    chat_id=user_id,
-                    photo=broadcast_content.photo.file_id,
-                    caption=broadcast_content.caption or ""
-                )
-            elif broadcast_content.video:
-                await client.send_video(
-                    chat_id=user_id,
-                    video=broadcast_content.video.file_id,
-                    caption=broadcast_content.caption or ""
-                )
-            elif broadcast_content.document:
-                await client.send_document(
-                    chat_id=user_id,
-                    document=broadcast_content.document.file_id,
-                    caption=broadcast_content.caption or ""
-                )
-            elif broadcast_content.audio:
-                await client.send_audio(
-                    chat_id=user_id,
-                    audio=broadcast_content.audio.file_id,
-                    caption=broadcast_content.caption or ""
-                )
-            elif broadcast_content.voice:
-                await client.send_voice(
-                    chat_id=user_id,
-                    voice=broadcast_content.voice.file_id,
-                    caption=broadcast_content.caption or ""
-                )
-            else:
-                await client.send_message(
-                    chat_id=user_id,
-                    text=broadcast_content.text or "",
-                    parse_mode="html"
-                )
-            sent_count += 1
-        except FloodWait as e:
-            await sleep(e.value)
-        except Exception as e:
-            print(f"Failed to send message to {user_id}: {e}")
-            failed_count += 1
-
-    # Notify admin
-    await client.send_message(
-        chat_id=ADMIN_ID,
-        text=(
-            f"📢 **Broadcast Completed**:\n\n"
-            f"✅ Sent: {sent_count} users\n"
-            f"❌ Failed: {failed_count} users\n"
-            f"👥 Total: {users_collection.count_documents({})} users"
-        )
-    )
-
-@app.on_message(filters.command("Rishu"))
-async def status_message(client, message):
-    user_count = users_collection.count_documents({})
-    uptime_minutes = (time.time() - start_time) / 60
-    await message.reply_text(f"💫 Bot uptime: {uptime_minutes:.2f} minutes\n\n👥 Total unique users: {user_count}")
-
 
 @app.on_message(filters.text & ~filters.command(["start", "status"]))
 async def get_video_links(client, message):
@@ -303,14 +147,27 @@ async def process_video_request(client, message):
     video_url = message.text.strip()
     await message.reply_chat_action(ChatAction.TYPING)
 
+    # Validate the video URL
+    if not video_url.startswith(("http://", "https://")):
+        await message.reply_text("❌ Invalid URL. Please provide a valid TeraBox URL.")
+        return
+
     try:
         # Retrieve video details
         thumbnail = fetch_video_details(video_url)
         if not thumbnail:
             thumbnail = "https://envs.sh/L75.jpg"  # Default image if thumbnail is missing
 
-        # Player URL using WebAppInfo
+        # Construct player URL
         player_url = f"{TERABOX_API}{video_url}"
+        print(f"Player URL: {player_url}")  # Debugging
+
+        # Validate player URL
+        if not player_url.startswith(("http://", "https://")):
+            await message.reply_text("❌ Failed to generate a valid player URL.")
+            return
+
+        # WebAppInfo for the player
         web_app = WebAppInfo(url=player_url)
 
         markup = InlineKeyboardMarkup([
