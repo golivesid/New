@@ -15,14 +15,14 @@ from typing import Optional
 import random
 
 # Bot details from environment variables
-BOT_TOKEN = "6956731651:AAHdXJxSS6qliZAkCCCPAzPwU4i-oha0PY0"
-CHANNEL_1_USERNAME = "Rishuteam"  # First channel username
-CHANNEL_2_USERNAME = "RishuNetwork"  # Second channel username
-API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
-API_ID = "14050586"
+BOT_TOKEN = "7838756294:AAHl13XUVw-8wgVJmla-Dz5qUl-8C9ijB_I"
+CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
+CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
+API_HASH = "561ae93345a2a4e435cff3c75a088b72"
+API_ID = "20026290"
 TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"
-DUMP_CHANNEL = "-1002436700388"
-ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
+DUMP_CHANNEL = "-1002688354661"
+ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
 
 # Flask app for monitoring
 flask_app = Flask(__name__)
@@ -32,7 +32,7 @@ start_time = time.time()
 mongo_client = pymongo.MongoClient(
     os.getenv(
         "MONGO_URI",
-        "mongodb+srv://Krishna:pss968048@cluster0.4rfuzro.mongodb.net/?retryWrites=true&w=majority"
+        "mongodb+srv://sankar:sankar@sankar.lldcdsx.mongodb.net/?retryWrites=true&w=majority"
     )
 )
 db = mongo_client[os.getenv("MONGO_DB_NAME", "Rishu-free-db")]
