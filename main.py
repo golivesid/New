@@ -1,16 +1,15 @@
 import os
 import urllib.parse
+import requests
+import time
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ChatAction
-from pyrogram.errors import UserNotParticipant, FloodWait
-import requests
-import time
-from bs4 import BeautifulSoup
-from flask import Flask
-from threading import Thread
+from pyrogram.errors import UserNotParticipant
 import pymongo
 import random
+from threading import Thread
+from flask import Flask
 
 # Bot details from environment variables
 BOT_TOKEN = "7838756294:AAHl13XUVw-8wgVJmla-Dz5qUl-8C9ijB_I"
@@ -18,8 +17,8 @@ CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
 CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
 API_HASH = "561ae93345a2a4e435cff3c75a088b72"
 API_ID = "20026290"
-DUMP_CHANNEL = "-1002688354661"
-ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
+DUMP_CHANNEL = "-1002688354661"  # Dump channel ID
+ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for notifications
 
 # Flask app for monitoring
 flask_app = Flask(__name__)
@@ -116,6 +115,11 @@ async def start_message(client, message):
 
 @app.on_message(filters.text & ~filters.command(["start", "status"]))
 async def get_video_links(client, message):
+    # Check if the message is from a user
+    if not message.from_user:
+        await message.reply_text("This command can only be used by users.")
+        return
+
     user_id = message.from_user.id
 
     # Check if the user is a member of both channels
@@ -164,14 +168,15 @@ async def process_video_request(client, message):
 
         # Send the message with the link and buttons
         await message.reply_text(
-            "👇👇 YOUR VIDEO LINK IS READY, USE THESE SERVERS 👇👇\n\n"
-            f"Original Link\n`{video_url}`\n\n"
-            "♥ 👇Your Stream Link👇 ♥\n",
+            "<b>👇👇 YOUR VIDEO LINK IS READY, USE THESE SERVERS 👇👇</b>\n\n"
+            f"<b>Original Link</b>\n<code>{video_url}</code>\n\n"
+            "<b>♥ 👇Your Stream Link👇 ♥</b>\n",
             reply_markup=reply_markup,
-            parse_mode='MarkdownV2'  # Use 'MarkdownV2' or 'HTML'
+            parse_mode='HTML'  # Use 'HTML' instead of 'MarkdownV2'
         )
     else:
         await message.reply_text("Please send me only a valid TeraBox link.")
+
 
 # Flask thread for monitoring
 def run_flask():
