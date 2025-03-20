@@ -1,15 +1,17 @@
 import os
-import urllib.parse
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from pyrogram.enums import ChatAction
+from pyrogram.errors import UserNotParticipant, FloodWait
 import requests
 import time
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.enums import ChatAction
-from pyrogram.errors import UserNotParticipant
-import pymongo
-import random
-from threading import Thread
+from bs4 import BeautifulSoup
 from flask import Flask
+from threading import Thread
+import pymongo
+import re
+from typing import Optional
+import random
 
 # Bot details from environment variables
 BOT_TOKEN = "7838756294:AAHl13XUVw-8wgVJmla-Dz5qUl-8C9ijB_I"
@@ -17,8 +19,9 @@ CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
 CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
 API_HASH = "561ae93345a2a4e435cff3c75a088b72"
 API_ID = "20026290"
-DUMP_CHANNEL = "-1002688354661"  # Dump channel ID
-ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for notifications
+TERABOX_API = "https://terabox-api.mrspyboy.workers.dev/"  # Ensure this URL is correct
+DUMP_CHANNEL = "-1002688354661"
+ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
 
 # Flask app for monitoring
 flask_app = Flask(__name__)
@@ -115,11 +118,6 @@ async def start_message(client, message):
 
 @app.on_message(filters.text & ~filters.command(["start", "status"]))
 async def get_video_links(client, message):
-    # Check if the message is from a user
-    if not message.from_user:
-        await message.reply_text("This command can only be used by users.")
-        return
-
     user_id = message.from_user.id
 
     # Check if the user is a member of both channels
@@ -134,48 +132,70 @@ async def get_video_links(client, message):
     await process_video_request(client, message)
 
 
+def fetch_video_details(video_url: str) -> Optional[str]:
+    """Fetch video thumbnail from a direct TeraBox URL."""
+    try:
+        response = requests.get(video_url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            return soup.find("meta", property="og:image")["content"] if soup.find("meta", property="og:image") else None
+    except requests.exceptions.RequestException:
+        return None
+
+
 async def process_video_request(client, message):
     video_url = message.text.strip()
     await message.reply_chat_action(ChatAction.TYPING)
 
-    # Check if the user sent a valid link
-    if video_url.startswith(("http://", "https://")):
-        # User sent a link
-        parsed_link = urllib.parse.quote(video_url, safe='')
-        modified_link = f"https://terabox-player-one.vercel.app/?url=https://www.terabox.tech/play.html?url={parsed_link}"
-        modified_url = f"https://terabox-player-one.vercel.app/?url=https://www.terabox.tech/play.html?url={parsed_link}"
-        link_parts = video_url.split('/')
-        link_id = link_parts[-1]
-        sharelink = f"https://t.me/share/url?url=https://t.me/TeraBox_OnlineBot?start=terabox-{link_id}"
+    # Validate the video URL
+    if not video_url.startswith(("http://", "https://")):
+        await message.reply_text("❌ Invalid URL. Please provide a valid TeraBox URL.")
+        return
 
-        # Create buttons
-        buttons = [
-            [InlineKeyboardButton("🌐Stream Server 1🌐", url=modified_link)],
-            [InlineKeyboardButton("🌐Stream Server 2🌐", url=modified_url)],
-            [InlineKeyboardButton("◀Share▶", url=sharelink)]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
+    try:
+        # Retrieve video details
+        thumbnail = fetch_video_details(video_url)
+        if not thumbnail:
+            thumbnail = "https://envs.sh/L75.jpg"  # Default image if thumbnail is missing
 
-        # Send the user's details and message to the dump channel
-        user_message = (
-            f"User message:\n"
-            f"Name: {message.from_user.first_name}\n"
-            f"Username: @{message.from_user.username}\n"
-            f"User ID: {message.from_user.id}\n"
-            f"Message: {video_url}"
+        # Construct player URL
+        player_url = f"{TERABOX_API}{video_url}"
+        print(f"Player URL: {player_url}")  # Debugging
+
+        # Validate player URL
+        if not player_url.startswith(("http://", "https://")):
+            await message.reply_text("❌ Failed to generate a valid player URL.")
+            return
+
+        # WebAppInfo for the player
+        web_app = WebAppInfo(url=player_url)
+
+        markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("♡ PLAY VIDEO ♡", web_app=web_app)],
+            [InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')],
+            [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
+        ])
+
+        bot_message_text = f"**Dear: 🤩  {message.from_user.mention}\n\nHere's your video:**"
+
+        # Send video details to the user
+        await client.send_photo(
+            chat_id=message.chat.id,
+            photo=thumbnail,
+            caption=bot_message_text,
+            reply_markup=markup,
         )
-        await client.send_message(chat_id=DUMP_CHANNEL, text=user_message)
 
-        # Send the message with the link and buttons
-        await message.reply_text(
-            "<b>👇👇 YOUR VIDEO LINK IS READY, USE THESE SERVERS 👇👇</b>\n\n"
-            f"<b>Original Link</b>\n<code>{video_url}</code>\n\n"
-            "<b>♥ 👇Your Stream Link👇 ♥</b>\n",
-            reply_markup=reply_markup,
-            parse_mode='HTML'  # Use 'HTML' instead of 'MarkdownV2'
+        # Forward the link and thumbnail to the dump channel
+        dump_message_text = f"From {message.from_user.mention}:\n Link: [Watch Video]({player_url})"
+        await client.send_photo(
+            chat_id=DUMP_CHANNEL,
+            photo=thumbnail,
+            caption=dump_message_text
         )
-    else:
-        await message.reply_text("Please send me only a valid TeraBox link.")
+
+    except requests.exceptions.RequestException as e:
+        await message.reply_text(f"Error connecting to the API: {str(e)}")
 
 
 # Flask thread for monitoring
