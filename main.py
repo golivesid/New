@@ -153,46 +153,48 @@ async def process_video_request(client, message):
         return
 
     try:
-        # Retrieve video details
-        thumbnail = fetch_video_details(video_url)
-        if not thumbnail:
-            thumbnail = "https://envs.sh/L75.jpg"  # Default image if thumbnail is missing
+        # Construct the API request URL
+        api_url = f"{TERABOX_API}?url={video_url}"
+        print(f"API URL: {api_url}")  # Debugging
 
-        # Construct player URL
-        player_url = f"{TERABOX_API}{video_url}"
-        print(f"Player URL: {player_url}")  # Debugging
-
-        # Validate player URL
-        if not player_url.startswith(("http://", "https://")):
-            await message.reply_text("❌ Failed to generate a valid player URL.")
+        # Fetch the video download link from the API
+        response = requests.get(api_url)
+        if response.status_code != 200:
+            await message.reply_text("❌ Failed to fetch video details from the API.")
             return
 
-        # WebAppInfo for the player
-        web_app = WebAppInfo(url=player_url)
+        # Parse the API response
+        data = response.json()
+        if not data.get("success"):
+            await message.reply_text("❌ Failed to fetch video details from the API.")
+            return
 
-        markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("♡ PLAY VIDEO ♡", web_app=web_app)],
-            [InlineKeyboardButton('♡ SUPPORT ♡', url='https://t.me/Ur_rishu_143')],
-            [InlineKeyboardButton('♡All bots  ♡', url='https://t.me/vip_robotz')]
-        ])
+        # Get the video download link
+        download_url = data.get("download_url")
+        if not download_url:
+            await message.reply_text("❌ No download URL found in the API response.")
+            return
 
-        bot_message_text = f"**Dear: 🤩  {message.from_user.mention}\n\nHere's your video:**"
+        # Download the video
+        video_response = requests.get(download_url, stream=True)
+        if video_response.status_code != 200:
+            await message.reply_text("❌ Failed to download the video.")
+            return
 
-        # Send video details to the user
-        await client.send_photo(
+        # Save the video temporarily
+        with open("video.mp4", "wb") as f:
+            for chunk in video_response.iter_content(chunk_size=1024):
+                f.write(chunk)
+
+        # Send the video to the user
+        await client.send_video(
             chat_id=message.chat.id,
-            photo=thumbnail,
-            caption=bot_message_text,
-            reply_markup=markup,
+            video="video.mp4",
+            caption=f"**Dear: 🤩  {message.from_user.mention}\n\nHere's your video:**"
         )
 
-        # Forward the link and thumbnail to the dump channel
-        dump_message_text = f"From {message.from_user.mention}:\n Link: [Watch Video]({player_url})"
-        await client.send_photo(
-            chat_id=DUMP_CHANNEL,
-            photo=thumbnail,
-            caption=dump_message_text
-        )
+        # Clean up the temporary file
+        os.remove("video.mp4")
 
     except requests.exceptions.RequestException as e:
         await message.reply_text(f"Error connecting to the API: {str(e)}")
