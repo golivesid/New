@@ -164,13 +164,14 @@ async def process_video_request(client, message):
 
         # Send the message with the link and buttons
         await message.reply_text(
-            f"👇👇 YOUR VIDEO LINK IS READY, USE THESE SERVERS 👇👇\n\nOriginal Link\n{video_url}\n\n♥ 👇Your Stream Link👇 ♥\n",
+            "👇👇 YOUR VIDEO LINK IS READY, USE THESE SERVERS 👇👇\n\n"
+            f"Original Link\n`{video_url}`\n\n"
+            "♥ 👇Your Stream Link👇 ♥\n",
             reply_markup=reply_markup,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'  # Use 'MarkdownV2' or 'HTML'
         )
     else:
         await message.reply_text("Please send me only a valid TeraBox link.")
-
 
 # Flask thread for monitoring
 def run_flask():
