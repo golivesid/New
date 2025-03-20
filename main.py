@@ -19,7 +19,7 @@ CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
 CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
 API_HASH = "561ae93345a2a4e435cff3c75a088b72"
 API_ID = "20026290"
-TERABOX_API = "https://teraboxvideodownloader.nepcoderdevs.workers.dev/"  # Ensure this URL is correct
+TERABOX_API = "https://ytshorts.savetube.me/api/v1/terabox-downloader/"  # Ensure this URL is correct
 DUMP_CHANNEL = "-1002688354661"
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
 
