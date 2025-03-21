@@ -14,14 +14,14 @@ from typing import Optional
 import random
 
 # Bot details from environment variables
-BOT_TOKEN = "7838756294:AAHl13XUVw-8wgVJmla-Dz5qUl-8C9ijB_I"
+BOT_TOKEN = "7050622921:AAEnTNL4V_F2_0DjGUntvljvNNT2tB22J2s"
 CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
 CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
-API_HASH = "561ae93345a2a4e435cff3c75a088b72"
-API_ID = "20026290"
+API_HASH = "d538c2e1a687d414f5c3dce7bf4a743c"
+API_ID = "23054736"
 TERABOX_API = "https://terabox.udayscriptsx.workers.dev/"  # Ensure this URL is correct
-DUMP_CHANNEL = "-1002688354661"
-ADMIN_ID = int(os.getenv("ADMIN_ID", "5084389526"))  # Admin ID for new user notifications
+DUMP_CHANNEL = "-1002146782406"
+ADMIN_ID = int(os.getenv("ADMIN_ID", "1352497419"))  # Admin ID for new user notifications
 
 # Flask app for monitoring
 flask_app = Flask(__name__)
