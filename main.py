@@ -15,8 +15,8 @@ import random
 
 # Bot details from environment variables
 BOT_TOKEN = "7050622921:AAEnTNL4V_F2_0DjGUntvljvNNT2tB22J2s"
-CHANNEL_1_USERNAME = "VillageTv_Serials"  # First channel username
-CHANNEL_2_USERNAME = "VijayTv_Serial_25"  # Second channel username
+CHANNEL_1_USERNAME = "terao2"  # First channel username
+CHANNEL_2_USERNAME = "terao2"  # Second channel username
 API_HASH = "d538c2e1a687d414f5c3dce7bf4a743c"
 API_ID = "23054736"
 TERABOX_API = "https://terabox.udayscriptsx.workers.dev/"  # Ensure this URL is correct
@@ -101,8 +101,8 @@ async def start_message(client, message):
     random_image = random.choice(image_urls)
 
     # Inline buttons for channel join
-    join_button_1 = InlineKeyboardButton("♡ Support ♡", url=f"https://t.me/Ur_rishu_143")
-    join_button_2 = InlineKeyboardButton("♡ All Bots ♡", url=f"https://t.me/vip_robotz")
+    join_button_1 = InlineKeyboardButton("♡ Support ♡", url=f"https://t.me/terao2")
+    join_button_2 = InlineKeyboardButton("♡ All Bots ♡", url=f"https://t.me/terao2")
     support_button = InlineKeyboardButton('♡ FAQ ♡', callback_data='faq')
 
     markup = InlineKeyboardMarkup([[join_button_1], [join_button_2], [support_button]])
